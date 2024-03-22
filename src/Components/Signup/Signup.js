@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import {useNavigate} from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import Logo from '../../olx-logo.png';
 import './Signup.css';
@@ -12,22 +12,37 @@ export default function Signup() {
   const [email, setEmail] = useState()
   const [phone, setPhone] = useState()
   const [password, setPassword] = useState()
-  const {firebase} = useContext(firebaseContext)
+  const [error, setError] = useState(null)
+  const { firebase } = useContext(firebaseContext)
 
-  const handleClick=(e)=>{
+  const handleClick = async (e) => {
+
     e.preventDefault()
-    firebase.auth().createUserWithEmailAndPassword(email, password).then((result)=>{
-      console.log("RESULT : "+result)
-      result.user.updateProfile({displayName: username}).then(()=>{
-        firebase.firestore().collection('users').add({
-          id: result.user.uid,
-          username: username,
-          phone: phone,
-        }).then(()=>{
-          navigate('/login')
+
+    try {
+
+      if (!email || !password || !phone || !username) {
+        setError("All field are required")
+      }
+
+      await firebase.auth().createUserWithEmailAndPassword(email, password).then((result) => {
+        console.log("RESULT : " + result)
+        result.user.updateProfile({ displayName: username }).then(() => {
+          firebase.firestore().collection('users').add({
+            id: result.user.uid,
+            username: username,
+            email: email,
+            phone: phone,
+          }).then(() => {
+            navigate('/login')
+          })
         })
       })
-    })
+    } catch(error) {
+        console.log("EMAIL INVALID " + error.message)
+        if (error.code === "auth/argument-error") setError("Invalid email address")
+        else setError(error.message)
+      }   
   }
 
   return (
@@ -41,51 +56,55 @@ export default function Signup() {
             className="input"
             type="text"
             value={username}
-            onChange={(e)=>{setUsername(e.target.value)}}
+            onChange={(e) => { setUsername(e.target.value) }}
             id="fname"
             name="name"
+            placeholder='Username'
           />
           <br />
           <label htmlFor="fname">Email</label>
           <br />
           <input
+            placeholder='Email Address'
             className="input"
             type="email"
             value={email}
-            onChange={(e)=>{setEmail(e.target.value)}}
+            onChange={(e) => { setEmail(e.target.value) }}
             id="fname"
             name="email"
-            defaultValue="John"
           />
           <br />
           <label htmlFor="lname">Phone</label>
           <br />
           <input
+            placeholder='Phone No.'
             className="input"
             type="number"
             value={phone}
-            onChange={(e)=>{setPhone(e.target.value)}}
+            onChange={(e) => { setPhone(e.target.value) }}
             id="lname"
             name="phone"
-            defaultValue="Doe"
           />
           <br />
           <label htmlFor="lname">Password</label>
           <br />
           <input
+            placeholder='Password'
             className="input"
             type="password"
             value={password}
-            onChange={(e)=>{setPassword(e.target.value)}}
+            onChange={(e) => { setPassword(e.target.value) }}
             id="lname"
             name="password"
-            defaultValue="Doe"
           />
           <br />
           <br />
-          <button onClick={(e)=>{handleClick(e)}}>Signup</button>
+          {error && <div style={{width : "200px"}}><p style={{ color: 'red' }}>{error}</p></div>}
+          <button onClick={(e) => { handleClick(e) }}>Signup</button>
         </form>
-        <a>Login</a>
+        <Link to={'/login'}>
+          <span>Login</span>
+        </Link>
       </div>
     </div>
   );
