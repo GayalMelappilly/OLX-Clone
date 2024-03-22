@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import Logo from '../../olx-logo.png';
 import './Signup.css';
 
-import { firebaseContext } from '../../store/firebaseContext';
+import { firebaseContext } from '../../store/context';
 
 export default function Signup() {
   const navigate = useNavigate()

@@ -7,11 +7,19 @@ import Arrow from '../../assets/Arrow';
 import SellButton from '../../assets/SellButton';
 import SellButtonPlus from '../../assets/SellButtonPlus';
 
-import { firebaseContext } from '../../store/firebaseContext'; 
+import { authContext, firebaseContext } from '../../store/context';
 import { Link } from 'react-router-dom';
 
 function Header() {
-  const {firebase} = useContext(firebaseContext)
+  const { firebase } = useContext(firebaseContext)
+  const { user, setUser } = useContext(authContext)
+
+  const handleSignOut = () => {
+    firebase.auth().signOut().then(()=>{
+      alert('Logged out')
+    })
+  }
+
   return (
     <div className="headerParentDiv">
       <div className="headerChildDiv">
@@ -39,7 +47,12 @@ function Header() {
           <Arrow></Arrow>
         </div>
         <div className="loginPage">
-          {firebase.auth().currentUser ? <span>{firebase.auth().currentUser.displayName}</span> : <Link to={'/login'}><span>Login</span></Link>}
+          {user ? <div class="dropdown">
+            <span>{user.displayName}</span>
+            <div class="dropdown-content">
+              <p onClick={()=>handleSignOut()}>Sign out</p>
+            </div>
+          </div> : <Link to={'/login'}><span>Login</span></Link>}
           <hr />
         </div>
 
