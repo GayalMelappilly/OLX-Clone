@@ -2,7 +2,7 @@ import React, { Fragment, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Create.css';
 import Header from '../Header/Header';
-import { firebaseContext } from '../../store/context';
+import { authContext, firebaseContext } from '../../store/context';
 
 const Create = () => {
   const [name, setName] = useState('')
@@ -11,22 +11,32 @@ const Create = () => {
   const [image, setImage] = useState('')
   const navigate = useNavigate()
 
-  const {firebase} = useContext(firebaseContext)
+  const { firebase } = useContext(firebaseContext)
+  const { user } = useContext(authContext)
+
+  const today = new Date()
+
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1; // Months are zero-based (0 for January)
+  const day = today.getDate();
 
   const handleProductSubmit = async (e) => {
     e.preventDefault()
-    await firebase.storage().ref(`/images/${image.name}`).put(image).then(({ref})=>{
-      ref.getDownloadURL().then((url)=>{
+    await firebase.storage().ref(`/images/${image.name}`).put(image).then(({ ref }) => {
+      ref.getDownloadURL().then((url) => {
         console.log(url)
+        firebase.firestore().collection('products').add({
+          userId: user.uid,
+          name: name,
+          category: category,
+          price: price,
+          imageUrl: url,
+          createdAt: `${day} / ${month} / ${year}`
+        })
       })
-    })
-    await firebase.firestore().collection('products').add({
-      name: name,
-      category: category,
-      price: price,
-    }).then(()=>{
+    }).then(() => {
       console.log('PRODUCT ADDED')
-      navigate('/create')
+      navigate('/')
     })
   }
   return (
@@ -41,7 +51,7 @@ const Create = () => {
               className="input"
               type="text"
               value={name}
-              onChange={(e)=>setName(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
               id="fname"
               name="Name"
               defaultValue="John"
@@ -53,7 +63,7 @@ const Create = () => {
               className="input"
               type="text"
               value={category}
-              onChange={(e)=>{setCategory(e.target.value)}}
+              onChange={(e) => { setCategory(e.target.value) }}
               id="fname"
               name="category"
               defaultValue="John"
@@ -61,18 +71,18 @@ const Create = () => {
             <br />
             <label htmlFor="fname">Price</label>
             <br />
-            <input className="input" type="number" id="fname" name="Price" value={price} onChange={(e)=>{setPrice(e.target.value)}} />
+            <input className="input" type="number" id="fname" name="Price" value={price} onChange={(e) => { setPrice(e.target.value) }} />
             <br />
           </form>
           <br />
           <img alt="Posts" width="200px" height="200px" src={image ? URL.createObjectURL(image) : ''}></img>
           <form>
             <br />
-            <input type="file" onChange={(e)=>{
+            <input type="file" onChange={(e) => {
               setImage(e.target.files[0])
-            }}/>
+            }} />
             <br />
-            <button className="uploadBtn" onClick={(e)=>{handleProductSubmit(e)}}>upload and Submit</button>
+            <button className="uploadBtn" onClick={(e) => { handleProductSubmit(e) }}>upload and Submit</button>
           </form>
         </div>
       </card>

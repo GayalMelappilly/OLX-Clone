@@ -13,6 +13,7 @@ import FadeLoader from 'react-spinners/FadeLoader'
 import { authContext } from './store/context';
 import { firebaseContext } from './store/context';
 import Create from './Components/Create/Create';
+import ViewPost from './Pages/ViewPost';
 
 function App() {
   const {user, setUser} = useContext(authContext)
@@ -49,6 +50,7 @@ function App() {
           <Route path='/signup' element={<Signup />} />
           <Route path='/login' element={<Login />} />
           <Route path='/create' element={<Create />} />
+          <Route path='/view-product/:id' element={<ViewPost />} />
 
         </Routes>
 

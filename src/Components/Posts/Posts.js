@@ -3,7 +3,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import Heart from '../../assets/Heart';
 import './Post.css';
 
-import { firebaseContext } from '../../store/context';
+import { authContext, firebaseContext } from '../../store/context';
+import { Link } from 'react-router-dom';
 
 function Posts() {
 
@@ -12,15 +13,21 @@ function Posts() {
   const [data, setData] = useState([''])
 
 
-  useEffect(()=>{
-    const getData = async()=>{
+  useEffect(() => {
+    const getData = async () => {
       await firebase.firestore().collection('products').get().then((snapshot) => {
-          setData(snapshot)
-          console.log("DATA : "+data)
+        const allPost = snapshot.docs.map((product)=>{
+          return {
+            ...product.data(),
+            id: product.id
+          }
+        })
+        setData(allPost)
+        console.log("DATA : " + data)
       })
     }
     getData()
-  },[firebase])
+  }, [firebase])
 
 
   return (
@@ -31,23 +38,26 @@ function Posts() {
           <span>View more</span>
         </div>
         <div className="cards">
-          {data.forEach((obj)=> (
-            <div className="card">
-            <div className="favorite">
-              <Heart></Heart>
-            </div>
-            <div className="image">
-              <img src="../../../Images/R15V3.jpg" alt="" />
-            </div>
-            <div className="content">
-              <p className="rate">&#x20B9; {obj.name}</p>
-              <span className="kilometer">{obj.category}</span>
-              <p className="name">{obj.name}</p>
-            </div>
-            <div className="date">
-              <span>Tue May 04 2021</span>
-            </div>
-          </div>
+          {data.map((obj) => (
+
+            <Link to={`/view-product/${obj.id}`}>
+              <div className="card">
+                <div className="favorite">
+                  <Heart></Heart>
+                </div>
+                <div className="image">
+                  <img src={obj.imageUrl} alt="" />
+                </div>
+                <div className="content">
+                  <p className="rate">&#x20B9; {obj.price}</p>
+                  <span className="kilometer">{obj.category}</span>
+                  <p className="name">{obj.name}</p>
+                </div>
+                <div className="date">
+                  <span>{obj.createdAt}</span>
+                </div>
+              </div>
+            </Link>
           ))}
         </div>
       </div>
