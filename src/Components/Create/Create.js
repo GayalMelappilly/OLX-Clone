@@ -15,6 +15,11 @@ const Create = () => {
 
   const handleProductSubmit = async (e) => {
     e.preventDefault()
+    await firebase.storage().ref(`/images/${image.name}`).put(image).then(({ref})=>{
+      ref.getDownloadURL().then((url)=>{
+        console.log(url)
+      })
+    })
     await firebase.firestore().collection('products').add({
       name: name,
       category: category,
