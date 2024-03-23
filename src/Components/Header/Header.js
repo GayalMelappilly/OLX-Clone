@@ -15,7 +15,7 @@ function Header() {
   const { user, setUser } = useContext(authContext)
 
   const handleSignOut = () => {
-    firebase.auth().signOut().then(()=>{
+    firebase.auth().signOut().then(() => {
       alert('Logged out')
     })
   }
@@ -24,7 +24,9 @@ function Header() {
     <div className="headerParentDiv">
       <div className="headerChildDiv">
         <div className="brandName">
-          <OlxLogo></OlxLogo>
+          <Link to={'/'}>
+            <OlxLogo></OlxLogo>
+          </Link>
         </div>
         <div className="placeSearch">
           <Search></Search>
@@ -50,7 +52,7 @@ function Header() {
           {user ? <div class="dropdown">
             <span>{user.displayName}</span>
             <div class="dropdown-content">
-              <p onClick={()=>handleSignOut()}>Sign out</p>
+              <p onClick={() => handleSignOut()}>Sign out</p>
             </div>
           </div> : <Link to={'/login'}><span>Login</span></Link>}
           <hr />
@@ -60,7 +62,9 @@ function Header() {
           <SellButton></SellButton>
           <div className="sellMenuContent">
             <SellButtonPlus></SellButtonPlus>
-            <span>SELL</span>
+            <Link to={'/create'}>
+              <span>SELL</span>
+            </Link>
           </div>
         </div>
       </div>
