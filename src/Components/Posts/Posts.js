@@ -17,8 +17,7 @@ function Posts() {
   const {postDetails, setPostDetails} = useContext(postContext)
 
   useEffect(() => {
-    const getData = async () => {
-      await firebase.firestore().collection('products').get().then((snapshot) => {
+      firebase.firestore().collection('products').get().then((snapshot) => {
         const allPost = snapshot.docs.map((product)=>{
           return {
             ...product.data(),
@@ -28,9 +27,7 @@ function Posts() {
         setData(allPost)
         console.log("DATA : " + data)
       })
-    }
-    getData()
-  }, [firebase])
+  }, [firebase, data])
 
 
   return (
