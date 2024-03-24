@@ -4,48 +4,48 @@ import './View.css';
 
 import { authContext, firebaseContext } from '../../store/context';
 import { useParams } from 'react-router-dom';
+import { postContext } from '../../store/PostContext';
 
 function View() {
   const { firebase } = useContext(firebaseContext)
-  const {user} = useContext(authContext)
+  const { user } = useContext(authContext)
   const [product, setProduct] = useState([])
-  const [userInfo, setUserInfo] = useState([])
+  const [userInfo, setUserInfo] = useState()
+
+  const {postDetails} = useContext(postContext)
 
   const id = useParams().id
-
-  console.log("ID : "+user.uid)
   useEffect(() => {
-    const getDoc = async () => {
-      const doc = await firebase.firestore().collection('products').doc(id).get()
-      firebase.firestore().collection('users').where(id, '==', user.uid).get().then((snapshot)=>{
-        setUserInfo(snapshot)
+    const {userId} = postDetails
+      console.log('USER ID : '+userId)
+      firebase.firestore().collection('users').where('id', '==', userId).get().then((res)=>{
+        res.forEach((doc)=>{
+          console.log('USER INFO : ' + doc.data())
+          setUserInfo(doc.data())
+        })
       })
-      setProduct(doc.data())
-      console.log('USER INFO : '+userInfo)
-    }
-    getDoc()
-  }, [id])
+  }, [])
   return (
     <div className="viewParentDiv">
       <div className="imageShowDiv">
         <img
-          src="../../../Images/R15V3.jpg"
+          src={postDetails.imageUrl}
           alt=""
         />
       </div>
       <div className="rightSection">
         <div className="productDetails">
-          <p>&#x20B9; {product.price} </p>
-          <span>{product.name}</span>
-          <p>{product.category}</p>
-          <span>{product.createdAt}</span>
+          <p>&#x20B9; {postDetails.price}</p>
+          <span>{postDetails.name}</span>
+          <p>{postDetails.category}</p>
+          <span>{postDetails.createAt}</span>
         </div>
-        <div className="contactDetails">
+        {userInfo && <div className="contactDetails">
           <p>Seller details</p>
-          <p>{user.displayName}</p>
-          <p>{user.phoneNumber}</p>
-          <p>{user.emailAddress}</p>
-        </div>
+          <p>{userInfo.username}</p>
+          <p>{userInfo.phone}</p>
+          <p>{userInfo.email}</p>
+        </div>}
       </div>
     </div>
   );

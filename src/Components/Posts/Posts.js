@@ -4,14 +4,17 @@ import Heart from '../../assets/Heart';
 import './Post.css';
 
 import { authContext, firebaseContext } from '../../store/context';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { postContext } from '../../store/PostContext';
 
 function Posts() {
 
   const { firebase } = useContext(firebaseContext)
-
   const [data, setData] = useState([''])
 
+  const navigate = useNavigate()
+
+  const {postDetails, setPostDetails} = useContext(postContext)
 
   useEffect(() => {
     const getData = async () => {
@@ -39,9 +42,10 @@ function Posts() {
         </div>
         <div className="cards">
           {data.map((obj) => (
-
-            <Link to={`/view-product/${obj.id}`}>
-              <div className="card">
+              <div className="card" onClick={()=>{
+                setPostDetails(obj)
+                navigate(`/view-product/${obj.id}`)
+              }}>
                 <div className="favorite">
                   <Heart></Heart>
                 </div>
@@ -57,7 +61,6 @@ function Posts() {
                   <span>{obj.createdAt}</span>
                 </div>
               </div>
-            </Link>
           ))}
         </div>
       </div>
