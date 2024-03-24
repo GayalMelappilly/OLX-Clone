@@ -10,11 +10,12 @@ import { postContext } from '../../store/PostContext';
 function Posts() {
 
   const { firebase } = useContext(firebaseContext)
+  const {setPostDetails} = useContext(postContext)
   const [data, setData] = useState([''])
 
   const navigate = useNavigate()
 
-  const {postDetails, setPostDetails} = useContext(postContext)
+  setPostDetails("HELLO")
 
   useEffect(() => {
       firebase.firestore().collection('products').get().then((snapshot) => {
@@ -25,9 +26,9 @@ function Posts() {
           }
         })
         setData(allPost)
-        console.log("DATA : " + data)
+        console.log("DATA : " + allPost)
       })
-  }, [firebase, data])
+  }, [firebase])
 
 
   return (

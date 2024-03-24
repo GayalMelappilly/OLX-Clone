@@ -43,7 +43,6 @@ function App() {
         // cssOverride={override}
         size={300}
       /></div> :
-        <Post>
           <Router>
 
             <Routes>
@@ -55,7 +54,6 @@ function App() {
             </Routes>
 
           </Router>
-        </Post>
       }
     </div>
   );

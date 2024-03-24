@@ -9,20 +9,20 @@ function View() {
   const { postDetails } = useContext(postContext)
   const [userInfo, setUserInfo] = useState(null)
   const [isLoading, setIsLoading] = useState(true) // Set initial loading state to true
+  const [product, setProduct] = useState('')
+
+  console.log("PD : " + postDetails)
+  setProduct(postDetails)
+  const { userId } = product
 
   useEffect(() => {
-    if (postDetails && postDetails.userId) {
-      const { userId } = postDetails
-      setIsLoading(true) // Set loading state to true when starting to fetch data
-      firebase.firestore().collection('users').where('id', '==', userId).get().then((res) => {
-        res.forEach((doc) => {
-          setUserInfo(doc.data())
-          setIsLoading(false) // Set loading state to false when data fetching is complete
-        })
+    setIsLoading(true) // Set loading state to true when starting to fetch data
+    firebase.firestore().collection('users').where('id', '==', userId).get().then((res) => {
+      res.forEach((doc) => {
+        setUserInfo(doc.data())
+        setIsLoading(false) // Set loading state to false when data fetching is complete
       })
-    } else {
-      setIsLoading(false) // Set loading state to false if postDetails is undefined
-    }
+    })
   }, [firebase, postDetails])
 
   if (isLoading) {
@@ -39,18 +39,18 @@ function View() {
 
   return (
     <div className="viewParentDiv">
-      {postDetails && <div className="imageShowDiv">
+      {product && <div className="imageShowDiv">
         <img
-          src={postDetails.imageUrl}
+          src={product.imageUrl}
           alt=""
         />
       </div>}
       <div className="rightSection">
-        {postDetails && <div className="productDetails">
-          <p>&#x20B9; {postDetails.price}</p>
-          <span>{postDetails.name}</span>
-          <p>{postDetails.category}</p>
-          <span>{postDetails.createAt}</span>
+        {product && <div className="productDetails">
+          <p>&#x20B9; {product.price}</p>
+          <span>{product.name}</span>
+          <p>{product.category}</p>
+          <span>{product.createAt}</span>
         </div>}
         {userInfo && <div className="contactDetails">
           <p>Seller details</p>
